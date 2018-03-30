@@ -16,6 +16,8 @@
 
 package com.webcohesion.ofx4j.domain.data;
 
+import com.webcohesion.ofx4j.domain.data.signon.SignonRequest;
+import com.webcohesion.ofx4j.domain.data.signon.SignonRequestMessageSet;
 import com.webcohesion.ofx4j.meta.Aggregate;
 import com.webcohesion.ofx4j.meta.ChildAggregate;
 import com.webcohesion.ofx4j.meta.Header;
@@ -131,4 +133,41 @@ public class RequestEnvelope {
   public void setMessageSets(SortedSet<RequestMessageSet> messageSets) {
     this.messageSets = messageSets;
   }
+  
+  /**
+   * Helper method for looking up the signon request.
+   *
+   * @return The signon request, or null if none found.
+   */
+  public SignonRequest getSignonRequest() {
+    MessageSetType type = MessageSetType.signon;
+    RequestMessageSet message = getMessageSet(type);
+    
+    if (message != null) {
+      return ((SignonRequestMessageSet) message).getSignonRequest();
+    }
+    else {
+      return null;
+    }
+  }
+  
+  /**
+   * Get the message set of the specified type.
+   *
+   * @param type The type.
+   * @return The message set, or null.
+   */
+  public RequestMessageSet getMessageSet(MessageSetType type) {
+    RequestMessageSet message = null;
+    if (this.messageSets != null) {
+      for (RequestMessageSet messageSet : this.messageSets) {
+        if (messageSet.getType() == type) {
+          message = messageSet;
+          break;
+        }
+      }
+    }
+    return message;
+  }
+  
 }
