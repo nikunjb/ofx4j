@@ -19,9 +19,11 @@ package com.webcohesion.ofx4j.domain.data.creditcard;
 import com.webcohesion.ofx4j.domain.data.MessageSetType;
 import com.webcohesion.ofx4j.domain.data.RequestMessageSet;
 import com.webcohesion.ofx4j.domain.data.RequestMessage;
+import com.webcohesion.ofx4j.domain.data.banking.BankStatementRequestTransaction;
 import com.webcohesion.ofx4j.meta.Aggregate;
 import com.webcohesion.ofx4j.meta.ChildAggregate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -31,20 +33,28 @@ import java.util.ArrayList;
 @Aggregate ( "CREDITCARDMSGSRQV1" )
 public class CreditCardRequestMessageSet extends RequestMessageSet {
 
-  private CreditCardStatementRequestTransaction statementRequest;
+  private List<CreditCardStatementRequestTransaction> statementRequests;
 
   public MessageSetType getType() {
     return MessageSetType.creditcard;
   }
-
+  
+  @ChildAggregate (order = 0)
+  public List<CreditCardStatementRequestTransaction> getStatementRequests() {
+    return statementRequests;
+  }
+  
+  public void setStatementRequests(List<CreditCardStatementRequestTransaction> statementRequests) {
+    this.statementRequests = statementRequests;
+  }
+  
   /**
    * The request.
    *
    * @return The request.
    */
-  @ChildAggregate (order = 0)
   public CreditCardStatementRequestTransaction getStatementRequest() {
-    return statementRequest;
+    return statementRequests == null || statementRequests.isEmpty() ? null : statementRequests.get(0);
   }
 
   /**
@@ -53,14 +63,14 @@ public class CreditCardRequestMessageSet extends RequestMessageSet {
    * @param statementRequest The request.
    */
   public void setStatementRequest(CreditCardStatementRequestTransaction statementRequest) {
-    this.statementRequest = statementRequest;
+    this.statementRequests = Collections.singletonList(statementRequest);
   }
 
   // Inherited.
   public List<RequestMessage> getRequestMessages() {
     ArrayList<RequestMessage> requestMessages = new ArrayList<RequestMessage>();
-    if (getStatementRequest() != null) {
-      requestMessages.add(getStatementRequest());
+    if (statementRequests != null) {
+      requestMessages.addAll(statementRequests);
     }
     return requestMessages;
   }

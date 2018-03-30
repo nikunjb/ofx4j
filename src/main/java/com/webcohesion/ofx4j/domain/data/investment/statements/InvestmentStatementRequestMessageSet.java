@@ -23,6 +23,7 @@ import com.webcohesion.ofx4j.meta.Aggregate;
 import com.webcohesion.ofx4j.meta.ChildAggregate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,20 +35,28 @@ import java.util.List;
 @Aggregate( "INVSTMTMSGSRQV1" )
 public class InvestmentStatementRequestMessageSet extends RequestMessageSet {
 
-  private InvestmentStatementRequestTransaction statementRequest;
+  private List<InvestmentStatementRequestTransaction> statementRequests;
 
   public MessageSetType getType() {
     return MessageSetType.investment;
   }
-
+  
+  @ChildAggregate(order = 0)
+  public List<InvestmentStatementRequestTransaction> getStatementRequests() {
+    return statementRequests;
+  }
+  
+  public void setStatementRequests(List<InvestmentStatementRequestTransaction> statementRequests) {
+    this.statementRequests = statementRequests;
+  }
+  
   /**
    * Gets the statement request.
    *
    * @return the request
    */
-  @ChildAggregate(order = 0)
   public InvestmentStatementRequestTransaction getStatementRequest() {
-    return statementRequest;
+    return statementRequests == null ? null : statementRequests.get(0);
   }
 
   /**
@@ -56,14 +65,14 @@ public class InvestmentStatementRequestMessageSet extends RequestMessageSet {
    * @param statementRequest the request
    */
   public void setStatementRequest(InvestmentStatementRequestTransaction statementRequest) {
-    this.statementRequest = statementRequest;
+    this.statementRequests = Collections.singletonList(statementRequest);
   }
 
   // Inherited.
   public List<RequestMessage> getRequestMessages() {
     ArrayList<RequestMessage> requestMessages = new ArrayList<RequestMessage>();
-    if (getStatementRequest() != null) {
-      requestMessages.add(getStatementRequest());
+    if (statementRequests != null) {
+      requestMessages.addAll(statementRequests);
     }
     return requestMessages;
   }

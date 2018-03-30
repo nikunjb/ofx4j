@@ -17,7 +17,11 @@
 package com.webcohesion.ofx4j.io;
 
 import junit.framework.TestCase;
+
+import com.webcohesion.ofx4j.domain.data.MessageSetType;
 import com.webcohesion.ofx4j.domain.data.ResponseEnvelope;
+import com.webcohesion.ofx4j.domain.data.profile.ProfileResponseTransaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,8 +51,12 @@ public class TestUnmarshalling extends TestCase {
     catch (OFXParseException e) {
       //fall through...
     }
-
-    unmarshaller.unmarshal(TestUnmarshalling.class.getResourceAsStream("fremont-bank-profile.ofx"));
+  
+    final ResponseEnvelope resp = unmarshaller.unmarshal(TestUnmarshalling.class.getResourceAsStream("fremont-bank-profile.ofx"));
+    assertEquals("Fremont Bank", resp.getSignonResponse().getFinancialInstitution().getOrganization());
+    assertEquals("692db6b5-a7d4-4341-8f3e-5ad8a165499c", ((ProfileResponseTransaction)resp.getMessageSet(MessageSetType.profile).getResponseMessages().get(0)).getUID());
+    assertEquals("ERROR", ((ProfileResponseTransaction)(resp.getMessageSet(MessageSetType.profile).getResponseMessages().get(0))).getStatus().getSeverity().name());
+    assertEquals(15500, ((ProfileResponseTransaction)(resp.getMessageSet(MessageSetType.profile).getResponseMessages().get(0))).getStatus().getCode().getCode());
   }
 
   public void testProfileUnmarshalling() throws Exception {
