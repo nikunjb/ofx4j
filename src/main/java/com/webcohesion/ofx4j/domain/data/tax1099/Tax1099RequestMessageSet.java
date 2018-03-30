@@ -21,6 +21,7 @@ import com.webcohesion.ofx4j.domain.data.RequestMessage;
 import com.webcohesion.ofx4j.meta.Aggregate;
 import com.webcohesion.ofx4j.meta.ChildAggregate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -32,20 +33,28 @@ import java.util.ArrayList;
 @Aggregate ( "TAX1099MSGSRQV1" )
 public class Tax1099RequestMessageSet extends RequestMessageSet {
 
-  private Tax1099RequestTransaction taxRequestTransaction;
+  private List<Tax1099RequestTransaction> taxRequestTransactions;
 
   public MessageSetType getType() {
     return MessageSetType.tax1099;
   }
-
+  
+  @ChildAggregate(order = 0)
+  public List<Tax1099RequestTransaction> getStatementRequests() {
+    return taxRequestTransactions;
+  }
+  
+  public void setStatementRequests(List<Tax1099RequestTransaction> statementRequests) {
+    this.taxRequestTransactions = statementRequests;
+  }
+  
   /**
    * The statement request.
    *
    * @return The statement request.
    */
-  @ChildAggregate( order = 0 )
   public Tax1099RequestTransaction getTaxRequestTransaction() {
-    return taxRequestTransaction;
+    return taxRequestTransactions == null ? null : taxRequestTransactions.get(0);
   }
 
   /**
@@ -54,14 +63,14 @@ public class Tax1099RequestMessageSet extends RequestMessageSet {
    * @param taxRequestTransaction The statement request.
    */
   public void setTaxRequestTransaction(Tax1099RequestTransaction taxRequestTransaction) {
-    this.taxRequestTransaction = taxRequestTransaction;
+    this.taxRequestTransactions = Collections.singletonList(taxRequestTransaction);
   }
 
   // Inherited.
   public List<RequestMessage> getRequestMessages() {
     ArrayList<RequestMessage> requestMessages = new ArrayList<RequestMessage>();
-    if (getTaxRequestTransaction() != null) {
-      requestMessages.add(getTaxRequestTransaction());
+    if (taxRequestTransactions != null) {
+      requestMessages.addAll(taxRequestTransactions);
     }
     return requestMessages;
   }
