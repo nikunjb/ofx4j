@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.webcohesion.ofx4j</groupId>
+  <groupId>com.stealthsec.ofx4j</groupId>
   <artifactId>ofx4j</artifactId>
   <packaging>bundle</packaging>
 
@@ -121,6 +121,13 @@
         </plugin>
       </plugins>
     </pluginManagement>
+        <extensions>
+          <extension>
+            <groupId>org.springframework.build</groupId>
+            <artifactId>aws-maven</artifactId>
+            <version>5.0.0.RELEASE</version>
+          </extension>
+        </extensions>
   </build>
 
   <dependencies>
@@ -187,14 +194,16 @@
   </dependencies>
 
   <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
     <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+       <id>maven-s3-release-repo-deploy</id>
+       <name>AWS Release Repository</name>
+       <url>s3://repository.stealthsec.com/releases</url>
     </repository>
+    <snapshotRepository>
+       <id>maven-s3-snapshot-repo-deploy</id>
+       <name>AWS Snapshot Repository</name>
+       <url>s3://repository.stealthsec.com/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <profiles>
